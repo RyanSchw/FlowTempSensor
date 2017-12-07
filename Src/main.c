@@ -107,7 +107,7 @@ int main(void)
 
   /* USER CODE BEGIN 3 */
       HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_3);
-      HAL_Delay(500);
+      HAL_Delay(100);
       
       HAL_ADC_Start(&hadc1);
       HAL_ADC_PollForConversion(&hadc1, 100);
@@ -292,9 +292,7 @@ void _Error_Handler(char * file, int line)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
   /* User can add his own implementation to report the HAL error return state */
-  while(1) 
-  {
-  }
+	/* Whooooooops, used to be while(1){}*/
   /* USER CODE END Error_Handler_Debug */ 
 }
 
