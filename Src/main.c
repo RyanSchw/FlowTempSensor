@@ -50,7 +50,6 @@ ADC_HandleTypeDef hadc1;
 /* Private variables ---------------------------------------------------------*/
 uint32_t adcValue;
 int g_MeasurementNumber;
-//https://visualgdb.com/tutorials/arm/stm32/adc/
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -105,18 +104,25 @@ int main(void)
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
-      HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_3);
-
-      HAL_ADC_Start(&hadc1);
       for (;;)
       {
-    	  if (HAL_ADC_PollForConversion(&hadc1, 10000) == HAL_OK) {
-    		  adcValue = HAL_ADC_GetValue(&hadc1);
-    		  g_MeasurementNumber++;
-    	  }
-    	  HAL_Delay(100);
+          HAL_ADC_Start(&hadc1);
+          if (HAL_ADC_PollForConversion(&hadc1, 10000) == HAL_OK) {
+              adcValue = HAL_ADC_GetValue(&hadc1);
+              g_MeasurementNumber++;
+          }
+          HAL_GPIO_WritePin(GPIOB, GPIO_PIN_3, GPIO_PIN_SET);
+          for (int i = 0; i < adcValue; i++)
+          {
+              asm("nop");
+          }
+          HAL_GPIO_WritePin(GPIOB, GPIO_PIN_3, GPIO_PIN_RESET);
+          for (int i = 0; i < 4096 - adcValue; i++)
+          {
+              asm("nop");
+          }
+          HAL_ADC_Stop(&hadc1);
       }
-
   }
   /* USER CODE END 3 */
 
@@ -210,13 +216,13 @@ static void MX_ADC1_Init(void)
   hadc1.Init.ScanConvMode = ADC_SCAN_DISABLE;
   hadc1.Init.EOCSelection = ADC_EOC_SINGLE_CONV;
   hadc1.Init.LowPowerAutoWait = DISABLE;
-  hadc1.Init.ContinuousConvMode = ENABLE;
+  hadc1.Init.ContinuousConvMode = DISABLE;
   hadc1.Init.NbrOfConversion = 1;
-  hadc1.Init.DiscontinuousConvMode = DISABLE;
+  hadc1.Init.DiscontinuousConvMode = ENABLE;
   hadc1.Init.NbrOfDiscConversion = 1;
   hadc1.Init.ExternalTrigConv = ADC_SOFTWARE_START;
   hadc1.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
-  hadc1.Init.DMAContinuousRequests = ENABLE;
+  hadc1.Init.DMAContinuousRequests = DISABLE;
   hadc1.Init.Overrun = ADC_OVR_DATA_PRESERVED;
   hadc1.Init.OversamplingMode = DISABLE;
   if (HAL_ADC_Init(&hadc1) != HAL_OK)
@@ -226,7 +232,7 @@ static void MX_ADC1_Init(void)
 
     /**Configure Regular Channel 
     */
-  sConfig.Channel = ADC_CHANNEL_12;
+  sConfig.Channel = ADC_CHANNEL_5;
   sConfig.Rank = 1;
   sConfig.SamplingTime = ADC_SAMPLETIME_2CYCLES_5;
   sConfig.SingleDiff = ADC_SINGLE_ENDED;
@@ -280,7 +286,9 @@ void _Error_Handler(char * file, int line)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
   /* User can add his own implementation to report the HAL error return state */
-	/* Whooooooops, used to be while(1){}*/
+  while(1) 
+  {
+  }
   /* USER CODE END Error_Handler_Debug */ 
 }
 
