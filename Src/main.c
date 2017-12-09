@@ -49,7 +49,9 @@ DMA_HandleTypeDef hdma_adc1;
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
-
+uint32_t adcValue;
+int g_MeasurementNumber;
+//https://visualgdb.com/tutorials/arm/stm32/adc/
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -60,7 +62,7 @@ static void MX_ADC1_Init(void);
 
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
-uint16_t adcValue;
+
 /* USER CODE END PFP */
 
 /* USER CODE BEGIN 0 */
@@ -108,7 +110,7 @@ int main(void)
   /* USER CODE BEGIN 3 */
       HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_3);
       HAL_Delay(100);
-      
+
       HAL_ADC_Start(&hadc1);
       HAL_ADC_PollForConversion(&hadc1, 100);
       adcValue = HAL_ADC_GetValue(&hadc1);
